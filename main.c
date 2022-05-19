@@ -25,8 +25,9 @@ int main(void) {
 	//<<< Global Strcutures and Settings >>>
 	//======================================
 	GPIO_InitTypeDef GPIO_InitStructure;
-	//EXTI_InitTypeDef EXTI_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
+	TIM_ICInitTypeDef  TIM_ICInitStructure;
 	
 	// Set Number of Bits fot Priority Groups:
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
@@ -44,14 +45,26 @@ int main(void) {
 	GPIO_Init(GPIOB, &GPIO_InitStructure); // initialize port B
 	
 	//<<< GPIO (Optical Sensor) >>>
-	//=====================
+	//=============================
 	// Initialize GPIO:
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;						// pin mode "input"
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;						// pin mode "alternate function"
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;					// output type "push-pull"
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;  							// 
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;				// no pull up/down resistor needed
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				// standart, speed does not matter that much
 	GPIO_Init(GPIOB, &GPIO_InitStructure); // initialize port B
+
+	// Das war wie üblich bei Interrupts nur die halbe Miete, wir müssen auch noch den zugehörigen Interrupt Channel konfigurieren
+	// In diesem Fall ist das "EXTI15_10_IRQn", also ein Channel der die Interrupts von EXTI10 bis EXTI15 zusammenfasst
+	// Den Namen finden wir wieder in der Startup Datei "stm32f30x.h"
+	// Wir aktivieren den Channel und geben ihm die höchste Priorität
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+	// Struktur übergeben ... fertig, jetzt wird der zugehörige Interrupt Handler aufgerufen, wenn der Taster gedrückt wird :-)
+	NVIC_Init(&NVIC_InitStructure);
 	
 	//<<< GPIO (Poti) >>>
 	//=====================
@@ -219,6 +232,28 @@ int main(void) {
 	// Start Continous Conversion:
 	ADC_StartConversion(ADC1);
 
+	//<<< InputCapture (Timer1) >>>
+	//===============================================
+	// Supply Timer 1:
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+	
+	// Alternate Function:
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource0, GPIO_AF_6);
+	
+	// Init Timer 1:
+	TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+  TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;
+  TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+  TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+  TIM_ICInitStructure.TIM_ICFilter = 0x0;
+  TIM_ICInit(TIM2, &TIM_ICInitStructure);
+  
+  /* TIM enable counter */
+  TIM_Cmd(TIM2, ENABLE);
+
+  /* Enable the CC2 Interrupt Request */
+  TIM_ITConfig(TIM2, TIM_IT_CC2, ENABLE);
+	
 	
 	//<<< Nested Vector Interrup Controller (NVIC)>>>
 	//===============================================
@@ -236,6 +271,13 @@ int main(void) {
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
+	// Timer 1:
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+	
 	// Timer 2 starten	
 	//TIM_Cmd(TIM2, ENABLE);
 
