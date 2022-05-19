@@ -43,6 +43,18 @@ int main(void) {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				// standart, speed does not matter that much
 	GPIO_Init(GPIOB, &GPIO_InitStructure); // initialize port B
 	
+	//<<< GPIO (Optical Sensor) >>>
+	//=====================
+	// Initialize GPIO:
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;						// pin mode "input"
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;					// output type "push-pull"
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;  							// 
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;				// no pull up/down resistor needed
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				// standart, speed does not matter that much
+	GPIO_Init(GPIOB, &GPIO_InitStructure); // initialize port B
+	
+	//<<< GPIO (Poti) >>>
+	//=====================
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE); // port C: ADC
 	
 	
@@ -56,7 +68,7 @@ int main(void) {
 	// Initialize Timer 2:
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
 	TIM_TimeBaseInitStructure.TIM_Prescaler = 63999; // 64 MHz clock devided by 7999+1 -> 1kHz timer frequency
-	TIM_TimeBaseInitStructure.TIM_Period = 9999; // 9999+1 counts -> 10 sec
+	TIM_TimeBaseInitStructure.TIM_Period = 999; // 9999+1 counts -> 10 sec
 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
 	
 	// Enable Timer 2:
@@ -148,7 +160,6 @@ int main(void) {
 	
 	
 	SPI_SSOutputCmd(SPI1, ENABLE);
-	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_ERR, ENABLE); // enable error interrupt
 	//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 	SPI_Cmd(SPI1, ENABLE);
 	
@@ -214,19 +225,19 @@ int main(void) {
 	// Initialize Interrupt Channel for Timer 2:
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_Init(&NVIC_InitStructure);
   
   /* Configure the SPI interrupt priority */
   NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
 	// Timer 2 starten	
-	TIM_Cmd(TIM2, ENABLE);
+	//TIM_Cmd(TIM2, ENABLE);
 
 
 	while(1)
@@ -254,9 +265,32 @@ void USART2_IRQHandler() {
 			}
 			i++;
 		}
-	} else if('m' == recvd) {
+	} else if('l' == recvd) {
 		//Send Serial Response:
-    const char resBuffer[RES_BUFFER_LENGTH] = "Mode X selected\r\n"; // max length: RES_BUFFER_LENGTH!
+    const char resBuffer[RES_BUFFER_LENGTH] = "Led data: X\r\n"; // max length: RES_BUFFER_LENGTH!
+		unsigned int i = 0;
+		while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
+			while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
+			if(resBuffer[i] == 'X') {
+				USART_SendData(USART2, recvd);
+			} else {
+				USART_SendData(USART2, resBuffer[i]);
+			}
+			i++;
+		}
+		for(unsigned int i=0; i<6; i++) {
+			GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+			SPI_SendData8(SPI1, 0xFF);
+			SPI_SendData8(SPI1, 0xFF);
+			SPI_SendData8(SPI1, 0xFF);
+			SPI_SendData8(SPI1, 0x10 | i);
+			SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
+			while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
+			while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
+		}	
+	} else if('6' <= recvd && recvd <= '9') {
+		//Send Serial Response:
+    const char resBuffer[RES_BUFFER_LENGTH] = "Engine Speed: X\r\n"; // max length: RES_BUFFER_LENGTH!
 		unsigned int i = 0;
 		while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
 			while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
@@ -269,12 +303,13 @@ void USART2_IRQHandler() {
 		}
 		
 		//Send SPI Command:
-		GPIO_ResetBits(GPIOB, GPIO_PinSource1);
-    SPI_SendData8(SPI1, 0x70 | 0x0F);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+    SPI_SendData8(SPI1, 0x70 | ((recvd-0x36)<<2) );
 		SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 		while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
     while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-			
+		//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
+		
 	} else if('0' <= recvd && recvd <= '5') {
 		//Send Serial Response:
     const char resBuffer[RES_BUFFER_LENGTH] = "Mode X selected\r\n"; // max length: RES_BUFFER_LENGTH!
@@ -290,11 +325,12 @@ void USART2_IRQHandler() {
 		}
 		
 		//Send SPI Command:
-		GPIO_ResetBits(GPIOB, GPIO_PinSource1);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_1);
     SPI_SendData8(SPI1, 0x90 | (recvd-0x30));
 		SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 		while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
     while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
+		//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
 	} else {
 		const char resBuffer[RES_BUFFER_LENGTH] = "Invalid Input: X\r\n"; // max length: RES_BUFFER_LENGTH!
 		unsigned int i = 0;
@@ -320,35 +356,22 @@ void TIM2_IRQHandler() {
 	USART_SendData(USART2, 0x30 | adcChar);
 	*/
 	
-	//GPIO_ResetBits(GPIOB, GPIO_PinSource1);
 	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear pending bit manually
 }
 
 void SPI1_IRQHandler() {
-	FlagStatus TXEmpty = SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE);
-	if(TXEmpty == SET) {
-		const char resBuffer[RES_BUFFER_LENGTH] = "SPI Sent!\r\n"; // max length: RES_BUFFER_LENGTH!
-		unsigned int i = 0;
-		while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
-			while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
-			USART_SendData(USART2, resBuffer[i]);
-			i++;
-		}
-		SPI_I2S_ClearFlag(SPI1, SPI_I2S_FLAG_TXE);
-		SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
-		GPIO_SetBits(GPIOB, GPIO_PinSource1);
-		
-		
-	} else {
-		const char resBuffer[RES_BUFFER_LENGTH] = "SPI Error!\r\n"; // max length: RES_BUFFER_LENGTH!
-		unsigned int i = 0;
-		while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
-			while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
-			USART_SendData(USART2, resBuffer[i]);
-			i++;
-		}
-		SPI_I2S_ClearFlag(SPI1, SPI_FLAG_CRCERR);
+	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
+	SPI_I2S_ClearFlag(SPI1, SPI_I2S_FLAG_TXE);
+	
+	const char resBuffer[RES_BUFFER_LENGTH] = "SPI Sent!\r\n"; // max length: RES_BUFFER_LENGTH!
+	unsigned int i = 0;
+	while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
+		while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
+		USART_SendData(USART2, resBuffer[i]);
+		i++;
 	}
+	GPIO_SetBits(GPIOB, GPIO_Pin_1);
+
 	
 }
 
