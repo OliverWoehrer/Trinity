@@ -1,0 +1,10 @@
+--cpu=Cortex-M4.fp
+"stm32f334x8\startup_stm32f334x8.o"
+"stm32f334x8\stm32f30x_rcc.o"
+"stm32f334x8\stm32f30x_gpio.o"
+"stm32f334x8\system_stm32f30x.o"
+"stm32f334x8\main.o"
+--library_type=microlib --strict --scatter "STM32F334x8\STM32F334x8.sct"
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "STM32F334x8.map" -o STM32F334x8\STM32F334x8.axf

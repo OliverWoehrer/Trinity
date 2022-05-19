@@ -1,0 +1,46 @@
+Dependencies for Project 'Project', Target 'STM32F334x8': (DO NOT MODIFY !)
+F (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Source\Templates\arm\startup_stm32f334x8.s)(0x5A7C7078)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_STM32F334x8-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include--pd "__UVISION_VERSION SETA 524" --pd "_RTE_ SETA 1" --pd "STM32F334x8 SETA 1"--list startup_stm32f334x8.lst --xref -o stm32f334x8\startup_stm32f334x8.o --depend stm32f334x8\startup_stm32f334x8.d)
+F (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\src\stm32f30x_rcc.c)(0x5A7C7079)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\ -I ..\..\..\Libraries\CMSIS\Include -I ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include -I ..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc -I ..\..\..\Libraries\STM32F30x_I2C_CPAL_Driver\inc --C99-I.\RTE\_STM32F334x8-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include-D__UVISION_VERSION="524" -D_RTE_ -DSTM32F334x8 -DUSE_STDPERIPH_DRIVER -DSTM32F334x8-o stm32f334x8\stm32f30x_rcc.o --omf_browse stm32f334x8\stm32f30x_rcc.crf --depend stm32f334x8\stm32f30x_rcc.d)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_rcc.h)(0x5A7C7079)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\stm32f30x.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cm4.h)(0x5A7C7078)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588BE5B4)
+I (..\..\..\Libraries\CMSIS\Include\core_cmInstr.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmFunc.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmSimd.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\system_stm32f30x.h)(0x5A7C7078)
+I (..\stm32f30x_conf.h)(0x5AC76ECD)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_gpio.h)(0x5A7C7079)
+F (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\src\stm32f30x_gpio.c)(0x5A7C7079)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\ -I ..\..\..\Libraries\CMSIS\Include -I ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include -I ..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc -I ..\..\..\Libraries\STM32F30x_I2C_CPAL_Driver\inc --C99-I.\RTE\_STM32F334x8-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include-D__UVISION_VERSION="524" -D_RTE_ -DSTM32F334x8 -DUSE_STDPERIPH_DRIVER -DSTM32F334x8-o stm32f334x8\stm32f30x_gpio.o --omf_browse stm32f334x8\stm32f30x_gpio.crf --depend stm32f334x8\stm32f30x_gpio.d)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_gpio.h)(0x5A7C7079)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\stm32f30x.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cm4.h)(0x5A7C7078)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588BE5B4)
+I (..\..\..\Libraries\CMSIS\Include\core_cmInstr.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmFunc.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmSimd.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\system_stm32f30x.h)(0x5A7C7078)
+I (..\stm32f30x_conf.h)(0x5AC76ECD)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_rcc.h)(0x5A7C7079)
+F (..\system_stm32f30x.c)(0x5AA79453)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\ -I ..\..\..\Libraries\CMSIS\Include -I ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include -I ..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc -I ..\..\..\Libraries\STM32F30x_I2C_CPAL_Driver\inc --C99-I.\RTE\_STM32F334x8-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include-D__UVISION_VERSION="524" -D_RTE_ -DSTM32F334x8 -DUSE_STDPERIPH_DRIVER -DSTM32F334x8-o stm32f334x8\system_stm32f30x.o --omf_browse stm32f334x8\system_stm32f30x.crf --depend stm32f334x8\system_stm32f30x.d)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\stm32f30x.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cm4.h)(0x5A7C7078)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588BE5B4)
+I (..\..\..\Libraries\CMSIS\Include\core_cmInstr.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmFunc.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmSimd.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\system_stm32f30x.h)(0x5A7C7078)
+I (..\stm32f30x_conf.h)(0x5AC76ECD)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_gpio.h)(0x5A7C7079)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_rcc.h)(0x5A7C7079)
+F (..\main.c)(0x5AA7DA98)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\ -I ..\..\..\Libraries\CMSIS\Include -I ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include -I ..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc -I ..\..\..\Libraries\STM32F30x_I2C_CPAL_Driver\inc --C99-I.\RTE\_STM32F334x8-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include-D__UVISION_VERSION="524" -D_RTE_ -DSTM32F334x8 -DUSE_STDPERIPH_DRIVER -DSTM32F334x8-o stm32f334x8\main.o --omf_browse stm32f334x8\main.crf --depend stm32f334x8\main.d)
+I (..\stm32f30x_conf.h)(0x5AC76ECD)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_gpio.h)(0x5A7C7079)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\stm32f30x.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cm4.h)(0x5A7C7078)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x588BE5B4)
+I (..\..\..\Libraries\CMSIS\Include\core_cmInstr.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmFunc.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Include\core_cmSimd.h)(0x5A7C7078)
+I (..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Include\system_stm32f30x.h)(0x5A7C7078)
+I (..\..\..\Libraries\STM32F30x_StdPeriph_Driver\inc\stm32f30x_rcc.h)(0x5A7C7079)
