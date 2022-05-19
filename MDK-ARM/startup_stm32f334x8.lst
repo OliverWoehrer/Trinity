@@ -724,14 +724,14 @@ ARM Macro Assembler    Page 12
   366 0000001C                 END
               00000000 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=stm32f334x8\startup_stm32f334x8.d -ostm32f334x8\startup_stm32f3
-34x8.o -I.\RTE\_STM32F334x8 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.2.0\CMSIS\Include
- -IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include --predefine="__E
-VAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA
- 524" --predefine="_RTE_ SETA 1" --predefine="STM32F334x8 SETA 1" --list=startu
-p_stm32f334x8.lst ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Source\Templates
-\arm\startup_stm32f334x8.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
+interwork --depend=stm32f334x8\startup_stm32f334x8.d -ostm32f334x8\startup_stm3
+2f334x8.o -I.\RTE\_STM32F334x8 -Ic:\Keil_v5\ARM\PACK\ARM\CMSIS\5.6.0\CMSIS\Core
+\Include -Ic:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\1.4.0\Device\Include --predef
+ine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERS
+ION SETA 529" --predefine="_RTE_ SETA 1" --predefine="STM32F334x8 SETA 1" --lis
+t=startup_stm32f334x8.lst ..\..\..\Libraries\CMSIS\Device\ST\STM32F30x\Source\T
+emplates\arm\startup_stm32f334x8.s
 
 
 
