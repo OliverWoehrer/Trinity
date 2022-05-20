@@ -53,7 +53,7 @@ void GPIO_Config(void){
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_7); 				// -> AF Num. 7 (PA2=USART2_TX, PA3=USART_RX)
 
 	//<<< GPIO (SPIO) >>>
-	GPIO_InitStr>ucture.GPIO_Mode = GPIO_Mode_AF;						// pin mode "alternative function"
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;						// pin mode "alternative function"
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;						// output type "push-pull"
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5; // OR operator to config both pins
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;						// no pull up/down resistor needed
@@ -101,31 +101,31 @@ void NVIC_Config(void){
 	// Set Number of Bits fot Priority Groups:
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
-	//<<< NVIC (UART2) >>>
+	// UART2:
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;				// -> Reference Manual P.195, Table 35: "Vector Table"
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;					// enable channel for interrupt
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1;	// set priority to 3 (lowest)
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; // lowest priority (highest value)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;			// set sub-priority to zero
 	NVIC_Init(&NVIC_InitStructure);
 
-	//<<< NVIC (TIM2) >>>
+	// TIM2:
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
   
-	//<<< NVIC (SPI1) >>>
+	// SPI1:
 	NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	//<<< NVIC (TIM1) >>>
+	// TIM1:
 	NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
@@ -141,15 +141,8 @@ void TIM_Config(void){
 	TIM_TimeBaseInitStructure.TIM_Period = 999; // 9999+1 counts -> 10 sec
 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
 	
-	// Enable Timer 2:
+	// Enable Interrupt on Update (Timer 2):
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-	// Enable Timer 2 and wait one cycle:
-	TIM_Cmd(TIM2, ENABLE);
-	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear flag after starting timer
-	while(TIM_GetFlagStatus(TIM2,TIM_IT_Update) == 0) {}; // wait for flag
-	TIM_Cmd(TIM2, DISABLE); // disable again
-	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);	
-	NVIC_ClearPendingIRQ(TIM2_IRQn);
 
 	// Init Timer 1:
 	TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
@@ -197,7 +190,7 @@ void SPI_Config(void){
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;												// master mode
-  	SPI_Init(SPI1, &SPI_InitStructure);
+  SPI_Init(SPI1, &SPI_InitStructure);
 	
 	
 	SPI_SSOutputCmd(SPI1, ENABLE);
@@ -206,7 +199,6 @@ void SPI_Config(void){
 }
 
 void ADC_Config(void){
-	uint32_t calibration_value = 0;
 	ADC_CommonInitTypeDef    ADC_CommonInitStructure; // for all/both ADC peripherals
 	ADC_InitTypeDef          ADC_InitStructure; // for individual converter
 			
@@ -227,12 +219,20 @@ void ADC_Config(void){
     
 	// Set Up Voltage Regulator and wait:
 	ADC_VoltageRegulatorCmd(ADC1, ENABLE);
+	
+	// Enable Timer 2 and wait for Voltage Regulator Weak Up:
+	TIM_Cmd(TIM2, ENABLE);
+	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear flag after starting timer
+	while(TIM_GetFlagStatus(TIM2,TIM_IT_Update) == 0) {}; // wait for flag
+	TIM_Cmd(TIM2, DISABLE); // disable again
+	TIM_ClearITPendingBit(TIM2,TIM_IT_Update);	
+	NVIC_ClearPendingIRQ(TIM2_IRQn);
 
 	// Calibration Calls:
 	ADC_SelectCalibrationMode(ADC1, ADC_CalibrationMode_Single);
 	ADC_StartCalibration(ADC1);
 	while(ADC_GetCalibrationStatus(ADC1) != RESET );
-	calibration_value = ADC_GetCalibrationValue(ADC1); // original: calibration_value = ADC_GetCalibrationValue(ADC1);
+	uint32_t calibration_value = ADC_GetCalibrationValue(ADC1); // original: calibration_value = ADC_GetCalibrationValue(ADC1);
 	ADC_Cmd(ADC1, ENABLE);
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_RDY));
 	
@@ -240,17 +240,12 @@ void ADC_Config(void){
 	ADC_StartConversion(ADC1);
 }
 
-void uart_print( char string[], int xvalue, int adc){
+void UARTPrint( char string[], int xvalue){
 	unsigned int i = 0;
 	while(string[i] != '\0') {
 		while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
 		if(string[i] == 'X') {
-			if (adc == 1){
-				USART_SendData(USART2, 0x30 | xvalue);
-			} else {
-				USART_SendData(USART2, xvalue);
-			}
-
+			USART_SendData(USART2, xvalue);
 		} else {
 			USART_SendData(USART2, string[i]);
 		}
@@ -258,16 +253,44 @@ void uart_print( char string[], int xvalue, int adc){
 	}
 }
 
+void setEngineSpeed(int speed) {
+	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+	SPI_SendData8(SPI1, 0x70|speed); // ((speed-0x36)<<2)
+	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
+	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
+	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
+}
+
+void setDemoMode(int mode) {
+	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+	SPI_SendData8(SPI1, 0x90|mode); //(recvd-0x30)
+	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
+	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
+	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
+}
+
+void setLeds(char leds1, char leds2, char leds3, char row) {
+	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+	SPI_SendData8(SPI1, leds1);
+	SPI_SendData8(SPI1, leds2);
+	SPI_SendData8(SPI1, leds3);
+	SPI_SendData8(SPI1, row);
+	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
+	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
+	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
+}
+
 int main(void) {
 	//<<< Config >>>
-	GPIO_Config();
 	RCC_Config();
-	NVIC_Config();
+	GPIO_Config();
 
 	TIM_Config();
 	USART_Config();
 	SPI_Config();
 	ADC_Config();
+	
+	NVIC_Config();
 	
 	while(1)
 	{}
@@ -278,52 +301,24 @@ void USART2_IRQHandler() {
 	int recvd = USART_ReceiveData(USART2);
 	if('a' == recvd) {
 		int adcRaw = ADC_GetConversionValue(ADC1);
-    	double adcValue = ((double)adcRaw)/(4095) * 3.3; // 12 bit = 4096 steps, Vdd=3.3V
+    double adcValue = ((double)adcRaw)/(4095) * 3.3; // 12 bit = 4096 steps, Vdd=3.3V
 		int adcChar = (int) adcValue;
-
-		//Send Serial Response:
-		uart_print("ADC Value XV\r\n",adcChar,1);
+		UARTPrint("ADC Value XV\r\n", 0x30|adcChar);
 			
 	} else if('l' == recvd) {
-		//Send Serial Response:
-		uart_print("Led data: X\r\n", recvd, 0);
-
+		UARTPrint("Led data: X\r\n", recvd);
 		for(unsigned int i=0; i<6; i++) {
-			GPIO_ResetBits(GPIOB, GPIO_Pin_1);
-			SPI_SendData8(SPI1, 0xFF);
-			SPI_SendData8(SPI1, 0xFF);
-			SPI_SendData8(SPI1, 0xFF);
-			SPI_SendData8(SPI1, 0x10 | i);
-			SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
-			while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-			while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-		}	
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|i);
+		}
+		
 	} else if('6' <= recvd && recvd <= '9') {
-		//Send Serial Response:
-		uart_print("Engine Speed: X\r\n", recvd, 0);
-		
-		//Send SPI Command:
-		GPIO_ResetBits(GPIOB, GPIO_Pin_1);
-    	SPI_SendData8(SPI1, 0x70 | ((recvd-0x36)<<2) );
-		SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
-		while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-    	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-		//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
-		
+		UARTPrint("Engine Speed: X\r\n", recvd); // send serial response
+		setEngineSpeed((recvd-0x36)<<2); // Send SPI Command to set speed
 	} else if('0' <= recvd && recvd <= '5') {
-		//Send Serial Response:
-		uart_print("Mode X selected\r\n",recvd,0);
-		
-		//Send SPI Command:
-		GPIO_ResetBits(GPIOB, GPIO_Pin_1);
-    	SPI_SendData8(SPI1, 0x90 | (recvd-0x30));
-		SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
-		while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-    	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-		//SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
+		UARTPrint("Mode X selected\r\n",recvd); // send serial response
+		setDemoMode(recvd-0x30); // Send SPI Command to set mode
 	} else {
-		//Send Serial Response:
-		uart_print("Invalid Input: X\r\n",recvd,0);
+		UARTPrint("Invalid Input: X\r\n",recvd); // send serial response
 	}
 }
 
@@ -343,16 +338,7 @@ void TIM2_IRQHandler() {
 void SPI1_IRQHandler() {
 	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
 	SPI_I2S_ClearFlag(SPI1, SPI_I2S_FLAG_TXE);
-	
-	const char resBuffer[RES_BUFFER_LENGTH] = "SPI Sent!\r\n"; // max length: RES_BUFFER_LENGTH!
-	unsigned int i = 0;
-	while(resBuffer[i] != '\0' && i<RES_BUFFER_LENGTH ) {
-		while(USART_GetFlagStatus(USART2, USART_FLAG_TXE)!=SET) {}; // wait for possible transmission to complete
-		USART_SendData(USART2, resBuffer[i]);
-		i++;
-	}
+	UARTPrint("SPI Sent!\r\n",0x30);
 	GPIO_SetBits(GPIOB, GPIO_Pin_1);
-
-	
 }
 
