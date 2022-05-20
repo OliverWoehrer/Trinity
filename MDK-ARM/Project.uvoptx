@@ -153,52 +153,27 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adcChar</ItemText>
+          <ItemText>cntPerRound,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>isOn</ItemText>
+          <ItemText>cntPerSlot</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>data,0x0A</ItemText>
+          <ItemText>adcRaw</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>slotState</ItemText>
+          <ItemText>stepSize,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cntPerSlot</ItemText>
-        </Ww>
-        <Ww>
-          <count>5</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>cntPerRound,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>6</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\STM32F334x8\../main.c\cntPerRound</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>cntPerSlot</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>cntPerSlot</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>cntPerSlot</ItemText>
+          <ItemText>slotState,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -246,7 +221,7 @@
       <SystemViewers>
         <Entry>
           <Name>System Viewer\TIM2</Name>
-          <WinId>35904</WinId>
+          <WinId>35903</WinId>
         </Entry>
         <Entry>
           <Name>System Viewer\TIM3</Name>

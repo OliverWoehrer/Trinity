@@ -25,9 +25,8 @@
 #define IMG_HIGHT 12
 
 //unsigned int cntPerRound;
-unsigned int cntPerSlot;
-unsigned int slotState;
-unsigned int isUpdated = 1;
+unsigned int step;
+//unsigned int isUpdated = 1;
 
 void RCC_Config(void){
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); 				// port A: NSS, UART
@@ -226,17 +225,17 @@ void NVIC_Config(void){
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
   
 	// SPI1:
 	NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	// TIM1:
+	// TIM3:
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -259,19 +258,15 @@ void UARTPrint( char string[], int xvalue){
 }
 
 void setEngineSpeed(int speed) {
+	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
 	SPI_SendData8(SPI1, 0x70|speed); // ((speed-0x36)<<2)
-	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 }
 
 void setDemoMode(int mode) {
+	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
 	SPI_SendData8(SPI1, 0x90|mode); //(recvd-0x30)
-	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 }
 
 void setLeds(char leds1, char leds2, char leds3, char row) {
@@ -280,9 +275,6 @@ void setLeds(char leds1, char leds2, char leds3, char row) {
 	SPI_SendData8(SPI1, leds2);
 	SPI_SendData8(SPI1, leds3);
 	SPI_SendData8(SPI1, row);
-	while (SPI_GetTransmissionFIFOStatus(SPI1) != SPI_TransmissionFIFOStatus_Empty) {}; // Waiting until TX FIFO is empty
-	while(SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {}; // Wait busy flag
-	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, ENABLE); // enable the Tx buffer empty interrupt
 }
 
 
@@ -301,49 +293,14 @@ int main(void) {
 	// Update Timer 2 Prescaler to match Timer 3:
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
-	TIM_TimeBaseInitStructure.TIM_Prescaler = TIM_PRE_SCALER; // 64 MHz clock devided by 7999+1 -> 1kHz timer frequency
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 0; // 64 MHz clock devided by 7999+1 -> 1kHz timer frequency
 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // enable Interrupt on update
 	TIM_Cmd(TIM2, ENABLE);
 	
 	while(1) {
-		// Update Timer 2 run time:
-		TIM_SetAutoreload(TIM2, cntPerSlot);
-		
-		if(isUpdated) {
-			isUpdated = 0;
-			int adcRaw = ADC_GetConversionValue(ADC1); // 0...4095
-			
-			setEngineSpeed( (adcRaw*15)/4095 );
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
-			/*switch(slotState) {
-				case 0:
-					setLeds(0xC0, 0xC0, 0xC1, 0x10);
-					break;
-				case 2:
-					setLeds(0xC0, 0xC0, 0xC1, 0x12);
-					break;
-				case 4:
-					setLeds(0xC0, 0xC0, 0xC1, 0x14);
-					break;
-				case 6:
-					setLeds(0xC0, 0xC0, 0xC1, 0x10);
-					break;
-				case 8:
-					setLeds(0xC0, 0xC0, 0xC1, 0x12);
-					break;
-				case 10:
-					setLeds(0xC0, 0xC0, 0xC1, 0x14);
-					break;
-				default:
-					break;
-			}*/
-			
-			
-		}
 		
 	}
-
 }
 
 void USART2_IRQHandler() {
@@ -372,11 +329,21 @@ void USART2_IRQHandler() {
 }
 
 void TIM2_IRQHandler() {
-	slotState = slotState + 1;
-	if(slotState >= IMG_HIGHT) {
-		slotState = 0;
+	GPIO_SetBits(GPIOB, GPIO_Pin_1);
+	step = step + 1;
+	switch(step) {
+		case 180:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+			break;
+		case 181:
+			setLeds(0xFF, 0xFF, 0xFF, 0x11);
+			break;
+		case 342:
+			step = 0;
+			break;
+		default:
+			break;
 	}
-	isUpdated = 1;
 	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear pending bit manually
 }
 
@@ -384,12 +351,16 @@ void SPI1_IRQHandler() {
 	SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
 	SPI_I2S_ClearFlag(SPI1, SPI_I2S_FLAG_TXE);
 	//UARTPrint("SPI Sent!\r\n",0x30);
-	GPIO_SetBits(GPIOB, GPIO_Pin_1);
+	//GPIO_SetBits(GPIOB, GPIO_Pin_1);
 }
 
 void TIM3_IRQHandler() {
 	TIM_SetCounter(TIM3, 0);
 	TIM_SetCounter(TIM2, 0);
-	cntPerSlot = TIM_GetCapture3(TIM3) / 6;
+	int cntPerRound = TIM_GetCapture3(TIM3);
+	int stepSize = (cntPerRound*300) / TIME_SLOTS;
+	TIM_SetAutoreload(TIM2, stepSize);
+	TIM_GenerateEvent(TIM2,TIM_EventSource_Update);
+	TIM_ClearITPendingBit(TIM3,TIM_IT_Update); // clear pending bit manually
 }
 
