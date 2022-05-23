@@ -20,13 +20,15 @@
 #include "stm32f30x_conf.h"
 
 #define RES_BUFFER_LENGTH 20
-#define TIM_PRE_SCALER 299
+#define TIM_PRE_SCALER 199
 #define TIME_SLOTS 2052
 #define IMG_HIGHT 12
 
-//unsigned int cntPerRound;
+//#define AVG_SAMPLE_SIZE 8
+//unsigned int stepSizes[AVG_SAMPLE_SIZE];
+//unsigned int avgStepSize = 0;
 unsigned int step;
-//unsigned int isUpdated = 1;
+
 
 void RCC_Config(void){
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE); 				// port A: NSS, UART
@@ -335,11 +337,23 @@ void TIM2_IRQHandler() {
 		case 180:
 			setLeds(0xFF, 0xFF, 0xFF, 0x10);
 			break;
-		case 181:
-			setLeds(0xFF, 0xFF, 0xFF, 0x11);
+		case 522:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+			break;
+		case 864:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+			break;
+		case 1206:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+			break;
+		case 1548:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+			break;
+		case 1890:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10);
 			break;
 		case 342:
-			step = 0;
+			//step = 0;
 			break;
 		default:
 			break;
@@ -355,10 +369,21 @@ void SPI1_IRQHandler() {
 }
 
 void TIM3_IRQHandler() {
+	static unsigned char i = 0;
 	TIM_SetCounter(TIM3, 0);
 	TIM_SetCounter(TIM2, 0);
 	int cntPerRound = TIM_GetCapture3(TIM3);
-	int stepSize = (cntPerRound*300) / TIME_SLOTS;
+	int stepSize = (cntPerRound*(TIM_PRE_SCALER+1)) / TIME_SLOTS;
+	step = 0;
+	
+//	stepSizes[i] = stepSize;
+//	i = (i+1) % AVG_SAMPLE_SIZE;
+//	unsigned int sum = 0;
+//	for (unsigned char j=0; j<AVG_SAMPLE_SIZE; j++) {
+//		sum = sum + stepSizes[j];
+//	}
+//	avgStepSize = sum / AVG_SAMPLE_SIZE;
+	
 	TIM_SetAutoreload(TIM2, stepSize);
 	TIM_GenerateEvent(TIM2,TIM_EventSource_Update);
 	TIM_ClearITPendingBit(TIM3,TIM_IT_Update); // clear pending bit manually

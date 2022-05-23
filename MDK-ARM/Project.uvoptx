@@ -158,22 +158,12 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cntPerSlot</ItemText>
+          <ItemText>stepSize,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adcRaw</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>stepSize,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>4</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>slotState,0x0A</ItemText>
+          <ItemText>avgStepSize,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
