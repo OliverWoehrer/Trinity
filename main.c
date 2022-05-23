@@ -24,7 +24,8 @@
 #define TIME_SLOTS 2052
 
 //Image Constants:
-#define OFFSET 60
+//#define OFFSET 0
+unsigned int OFFSET = 0;
 
 #define RED_EVEN 0x00
 #define RED_ODD 0x01
@@ -54,8 +55,18 @@
 #define ROW18 (18*6)
 #define ROW19 (19*6)
 #define ROW20 (20*6)
+#define ROW21 (21*6)
+#define ROW22 (22*6)
+#define ROW23 (23*6)
+#define ROW24 (24*6)
+#define ROW25 (25*6)
+#define ROW26 (26*6)
+#define ROW27 (27*6)
+#define ROW28 (28*6)
+#define ROW29 (29*6)
 
 unsigned int step;
+int oldADCRaw = 0;
 
 
 void RCC_Config(void){
@@ -120,7 +131,7 @@ void GPIO_Config(void){
 	GPIO_Init(GPIOC, &GPIO_InitStructure); 	 						 	// initialize port C
 
 
-	// TIM1:
+	// TIM3:
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;						// pin mode "alternate function"
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;						// output type "push-pull"
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;  							// 
@@ -305,6 +316,261 @@ void setLeds(char leds1, char leds2, char leds3, char row) {
 	SPI_SendData8(SPI1, row);
 }
 
+void displaySchweden(void){
+	//row 0
+	if (step == OFFSET+ROW4+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW6+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW8+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW10+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW12+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW14+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 1
+	else if (step == OFFSET+ROW5+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW7+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW9+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW11+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW13+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW15+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 2
+	else if (step == OFFSET+ROW6+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW8+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW10+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW12+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW14+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW16+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 3
+	else if (step == OFFSET+ROW7+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW9+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW11+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW13+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW15+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW17+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 4
+	else if (step == OFFSET+ROW8+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW10+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW12+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW14+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW16+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW18+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 5 (yellow)
+	else if (step == OFFSET+ROW9+RED_EVEN) setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW11+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW13+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW15+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW17+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|BLUE_EVEN); 
+	else if (step == OFFSET+ROW19+BLUE_ODD) setLeds(0xC0,0xC0,0xC0,0x10|BLUE_ODD);
+	
+	//row 6 (yellow)
+	else if (step == OFFSET+ROW10+RED_EVEN) setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW12+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW14+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW16+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW18+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|BLUE_EVEN); 
+	else if (step == OFFSET+ROW20+BLUE_ODD) setLeds(0xC0,0xC0,0xC0,0x10|BLUE_ODD);
+	
+	//row 7 (yellow)
+	else if (step == OFFSET+ROW11+RED_EVEN) setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW13+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW15+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW17+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW19+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|BLUE_EVEN); 
+	else if (step == OFFSET+ROW21+BLUE_ODD) setLeds(0xC0,0xC0,0xC0,0x10|BLUE_ODD);
+	
+	//row 8
+	else if (step == OFFSET+ROW12+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW14+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW16+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW18+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW20+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW22+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 9
+	else if (step == OFFSET+ROW13+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW15+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW17+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW19+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW21+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW23+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 10
+	else if (step == OFFSET+ROW14+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW16+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW18+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW20+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW22+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW24+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+	//row 11
+	else if (step == OFFSET+ROW15+RED_EVEN) setLeds(0xC0,0xC7,0xC0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW17+RED_ODD) setLeds(0xC0,0xC7,0xC0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW19+GREEN_EVEN) setLeds(0xC0, 0xC7, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW21+GREEN_ODD) setLeds(0xC0,0xC7,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW23+BLUE_EVEN) setLeds(0xFF, 0xF8, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW25+BLUE_ODD) setLeds(0xFF,0xF8,0xFF,0x10|BLUE_ODD);
+	
+}
+
+void displayAustria(void){
+	//row 0 (red)
+	if (step == OFFSET+ROW0+RED_EVEN) setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW2+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+		
+	//row 1 (red)
+	else if (step == OFFSET+ROW1+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW3+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 2 (red)
+	else if (step == OFFSET+ROW2+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW4+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 3 (red)
+	else if (step == OFFSET+ROW3+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW5+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 4 (white)
+	else if (step == OFFSET+ROW4+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW6+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW8+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW10+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW12+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW14+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 5 (white)
+	else if (step == OFFSET+ROW5+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW7+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW9+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW11+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW13+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW15+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 6 (white)
+	else if (step == OFFSET+ROW6+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW8+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW10+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW12+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW14+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW16+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 7 (white)
+	else if (step == OFFSET+ROW7+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW9+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW11+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW13+GREEN_ODD) setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW15+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW17+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 8 (red)
+	else if (step == OFFSET+ROW8+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW10+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 9 (red)
+	else if (step == OFFSET+ROW9+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW11+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 10 (red)
+	else if (step == OFFSET+ROW10+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW12+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	
+	//row 11 (red)
+	else if (step == OFFSET+ROW11+RED_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+	else if (step == OFFSET+ROW13+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+}
+
+void displayCzech(void) {
+	//row 0
+	if (step == OFFSET+ROW4+RED_EVEN) setLeds(0xFF,0xFF,0xFE,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW6+RED_ODD) setLeds(0xFF,0xFF,0xFE,0x10|RED_ODD);
+	else if (step == OFFSET+ROW8+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFE, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW10+GREEN_ODD) setLeds(0xFF,0xFF,0xFE,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW12+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW14+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 1
+	else if (step == OFFSET+ROW5+RED_EVEN) setLeds(0xFF,0xFF,0xFC,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW7+RED_ODD) setLeds(0xFF,0xFF,0xFC,0x10|RED_ODD);
+	else if (step == OFFSET+ROW9+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xFC, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW11+GREEN_ODD) setLeds(0xFF,0xFF,0xFC,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW13+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW15+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 3
+	else if (step == OFFSET+ROW6+RED_EVEN) setLeds(0xFF,0xFF,0xF8,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW8+RED_ODD) setLeds(0xFF,0xFF,0xF8,0x10|RED_ODD);
+	else if (step == OFFSET+ROW10+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xF8, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW12+GREEN_ODD) setLeds(0xFF,0xFF,0xF8,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW14+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW16+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 4
+	else if (step == OFFSET+ROW7+RED_EVEN) setLeds(0xFF,0xFF,0xF0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW9+RED_ODD) setLeds(0xFF,0xFF,0xF0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW11+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xF0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW13+GREEN_ODD) setLeds(0xFF,0xFF,0xF0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW15+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW17+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 5
+	else if (step == OFFSET+ROW7+RED_EVEN) setLeds(0xFF,0xFF,0xE0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW9+RED_ODD) setLeds(0xFF,0xFF,0xE0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW11+GREEN_EVEN) setLeds(0xFF, 0xFF, 0xE0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW13+GREEN_ODD) setLeds(0xFF,0xFF,0xE0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW15+BLUE_EVEN) setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW17+BLUE_ODD) setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+	
+	//row 6
+	else if (step == OFFSET+ROW8+RED_EVEN) setLeds(0xFF,0xFF,0xE0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW10+RED_ODD) setLeds(0xFF,0xFF,0xE0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW12+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW14+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW16+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xDF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW18+BLUE_ODD) setLeds(0xC0,0xC0,0xDF,0x10|BLUE_ODD);
+	
+	//row 7
+	else if (step == OFFSET+ROW9+RED_EVEN) setLeds(0xFF,0xFF,0xF0,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW11+RED_ODD) setLeds(0xFF,0xFF,0xF0,0x10|RED_ODD);
+	else if (step == OFFSET+ROW13+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW15+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW17+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xCF, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW19+BLUE_ODD) setLeds(0xC0,0xC0,0xCF,0x10|BLUE_ODD);
+	
+	//row 7
+	else if (step == OFFSET+ROW10+RED_EVEN) setLeds(0xFF,0xFF,0xF8,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW12+RED_ODD) setLeds(0xFF,0xFF,0xF8,0x10|RED_ODD);
+	else if (step == OFFSET+ROW14+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW16+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW18+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC7, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW20+BLUE_ODD) setLeds(0xC0,0xC0,0xC7,0x10|BLUE_ODD);
+	
+	//row 8
+	else if (step == OFFSET+ROW11+RED_EVEN) setLeds(0xFF,0xFF,0xFC,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW13+RED_ODD) setLeds(0xFF,0xFF,0xFC,0x10|RED_ODD);
+	else if (step == OFFSET+ROW15+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW17+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW19+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC3, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW21+BLUE_ODD) setLeds(0xC0,0xC0,0xC3,0x10|BLUE_ODD);
+	
+	//row 9
+	else if (step == OFFSET+ROW12+RED_EVEN) setLeds(0xFF,0xFF,0xFE,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW14+RED_ODD) setLeds(0xFF,0xFF,0xFE,0x10|RED_ODD);
+	else if (step == OFFSET+ROW16+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW18+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW20+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC1, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW22+BLUE_ODD) setLeds(0xC0,0xC0,0xC1,0x10|BLUE_ODD);
+	
+	//row 10
+	else if (step == OFFSET+ROW12+RED_EVEN) setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
+	else if (step == OFFSET+ROW14+RED_ODD) setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+	else if (step == OFFSET+ROW16+GREEN_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|GREEN_EVEN);
+	else if (step == OFFSET+ROW18+GREEN_ODD) setLeds(0xC0,0xC0,0xC0,0x10|GREEN_ODD);
+	else if (step == OFFSET+ROW20+BLUE_EVEN) setLeds(0xC0, 0xC0, 0xC0, 0x10|BLUE_EVEN);
+	else if (step == OFFSET+ROW22+BLUE_ODD) setLeds(0xC0,0xC0,0xC0,0x10|BLUE_ODD);
+	
+}
 
 int main(void) {
 	//<<< Config >>>
@@ -317,6 +583,10 @@ int main(void) {
 	ADC_Config();
 	
 	NVIC_Config();
+	
+	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
+	__nop();
+	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	
 	// Update Timer 2 Prescaler to match Timer 3:
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
@@ -354,157 +624,10 @@ void USART2_IRQHandler() {
 void TIM2_IRQHandler() {
 	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	step = (step+1) % 342; // step is reset every cycle
-
-	switch(step) {
-		//row 0:
-		case OFFSET+ROW0+RED_EVEN: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW2+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 1
-		case OFFSET+ROW1+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW3+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 2
-		case OFFSET+ROW2+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW4+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 3
-		case OFFSET+ROW3+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW5+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 4 (white)
-		case OFFSET+ROW4+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW6+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		case OFFSET+ROW8+GREEN_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
-			break;
-		case OFFSET+ROW10+GREEN_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
-			break;
-		case OFFSET+ROW12+BLUE_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
-			break;
-		case OFFSET+ROW14+BLUE_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
-			break;
-
-		//row 5 (white)
-		case OFFSET+ROW5+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW7+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		case OFFSET+ROW9+GREEN_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
-			break;
-		case OFFSET+ROW11+GREEN_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
-			break;
-		case OFFSET+ROW13+BLUE_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
-			break;
-		case OFFSET+ROW15+BLUE_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
-			break;
-		
-		//row 6 (white)
-		case OFFSET+ROW6+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW8+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		case OFFSET+ROW10+GREEN_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
-			break;
-		case OFFSET+ROW12+GREEN_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
-			break;
-		case OFFSET+ROW14+BLUE_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
-			break;
-		case OFFSET+ROW16+BLUE_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
-			break;
-		
-		//row 7 (white)
-		case OFFSET+ROW7+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW9+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		case OFFSET+ROW11+GREEN_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
-			break;
-		case OFFSET+ROW13+GREEN_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
-			break;
-		case OFFSET+ROW15+BLUE_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
-			break;
-		case OFFSET+ROW17+BLUE_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
-			break;
-		
-		//row 8
-		case OFFSET+ROW8+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW10+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 9
-		case OFFSET+ROW9+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW11+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 10
-		case OFFSET+ROW10+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW12+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		//row 11
-		case OFFSET+ROW11+RED_EVEN:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
-			break;
-		case OFFSET+ROW13+RED_ODD: 
-			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
-			break;
-		
-		
-
-		default:
-			break;
-	}
+	
+	//displaySchweden();
+	displayAustria();
+	//displayCzech();
 	
 	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear pending bit manually
 }
@@ -520,6 +643,10 @@ void TIM3_IRQHandler() {
 	TIM_SetCounter(TIM3, 0);
 	TIM_SetCounter(TIM2, 0);
 	step = 0;
+	
+	int adcRaw = ADC_GetConversionValue(ADC1);
+	OFFSET = (adcRaw*120) / 4096;
+	
 	
 	int cntPerRound = TIM_GetCapture3(TIM3);
 	int stepSize = (cntPerRound*(TIM_PRE_SCALER+1)) / TIME_SLOTS;
