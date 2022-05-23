@@ -3,7 +3,7 @@
 <title>Static Call Graph - [STM32F334x8\STM32F334x8.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image STM32F334x8\STM32F334x8.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon May 23 09:25:28 2022
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon May 23 11:22:42 2022
 <BR><P>
 <H3>Maximum Stack Usage =        196 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -516,9 +516,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[71]"></a>GPIO_SetBits</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f30x_gpio.o(i.GPIO_SetBits))
-<BR><BR>[Called By]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setEngineSpeed
-<LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setDemoMode
-<LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
+<BR><BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
 </UL>
 
 <P><STRONG><a name="[5f]"></a>NVIC_Config</STRONG> (Thumb, 130 bytes, Stack size 8 bytes, main.o(i.NVIC_Config))
@@ -646,7 +644,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f334x8.o(.text)
 </UL>
-<P><STRONG><a name="[26]"></a>TIM2_IRQHandler</STRONG> (Thumb, 172 bytes, Stack size 8 bytes, main.o(i.TIM2_IRQHandler))
+<P><STRONG><a name="[26]"></a>TIM2_IRQHandler</STRONG> (Thumb, 842 bytes, Stack size 8 bytes, main.o(i.TIM2_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = TIM2_IRQHandler &rArr; setLeds
 </UL>
 <BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
@@ -767,7 +765,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
-<P><STRONG><a name="[2c]"></a>USART2_IRQHandler</STRONG> (Thumb, 200 bytes, Stack size 40 bytes, main.o(i.USART2_IRQHandler))
+<P><STRONG><a name="[2c]"></a>USART2_IRQHandler</STRONG> (Thumb, 160 bytes, Stack size 40 bytes, main.o(i.USART2_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = USART2_IRQHandler &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_GetConversionValue
@@ -775,7 +773,6 @@ Global Symbols
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeds
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setEngineSpeed
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setDemoMode
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTPrint
@@ -846,21 +843,19 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[8a]"></a>setDemoMode</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, main.o(i.setDemoMode))
+<P><STRONG><a name="[8a]"></a>setDemoMode</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, main.o(i.setDemoMode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = setDemoMode
 </UL>
-<BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
+<BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_SendData8
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
-<P><STRONG><a name="[89]"></a>setEngineSpeed</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, main.o(i.setEngineSpeed))
+<P><STRONG><a name="[89]"></a>setEngineSpeed</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, main.o(i.setEngineSpeed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = setEngineSpeed
 </UL>
-<BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
+<BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_SendData8
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
@@ -872,8 +867,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_SendData8
 </UL>
-<BR>[Called By]<UL><LI><a href="#[2c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
-<LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
+<BR>[Called By]<UL><LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
 </UL>
 <P>
 <H3>

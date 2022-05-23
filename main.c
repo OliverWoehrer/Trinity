@@ -18,15 +18,43 @@
   ******************************************************************************
 */
 #include "stm32f30x_conf.h"
-
+//Global Constants:
 #define RES_BUFFER_LENGTH 20
 #define TIM_PRE_SCALER 199
 #define TIME_SLOTS 2052
-#define IMG_HIGHT 12
 
-//#define AVG_SAMPLE_SIZE 8
-//unsigned int stepSizes[AVG_SAMPLE_SIZE];
-//unsigned int avgStepSize = 0;
+//Image Constants:
+#define OFFSET 60
+
+#define RED_EVEN 0x00
+#define RED_ODD 0x01
+#define GREEN_EVEN 0x02
+#define GREEN_ODD 0x03
+#define BLUE_EVEN 0x04
+#define BLUE_ODD 0x05
+
+#define ROW0 (0*6)
+#define ROW1 (1*6)
+#define ROW2 (2*6)
+#define ROW3 (3*6)
+#define ROW4 (4*6)
+#define ROW5 (5*6)
+#define ROW6 (6*6)
+#define ROW7 (7*6)
+#define ROW8 (8*6)
+#define ROW9 (9*6)
+#define ROW10 (10*6)
+#define ROW11 (11*6)
+#define ROW12 (12*6)
+#define ROW13 (13*6)
+#define ROW14 (14*6)
+#define ROW15 (15*6)
+#define ROW16 (16*6)
+#define ROW17 (17*6)
+#define ROW18 (18*6)
+#define ROW19 (19*6)
+#define ROW20 (20*6)
+
 unsigned int step;
 
 
@@ -260,13 +288,11 @@ void UARTPrint( char string[], int xvalue){
 }
 
 void setEngineSpeed(int speed) {
-	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
 	SPI_SendData8(SPI1, 0x70|speed); // ((speed-0x36)<<2)
 }
 
 void setDemoMode(int mode) {
-	GPIO_SetBits(GPIOB, GPIO_Pin_1);
 	GPIO_ResetBits(GPIOB, GPIO_Pin_1);
 	SPI_SendData8(SPI1, 0x90|mode); //(recvd-0x30)
 }
@@ -296,6 +322,7 @@ int main(void) {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseInitStructure);
 	TIM_TimeBaseInitStructure.TIM_Prescaler = 0; // 64 MHz clock devided by 7999+1 -> 1kHz timer frequency
+	//TIM_TimeBaseInitStructure.TIM_Period = 999; // 999+1 counts -> 1 sec
 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // enable Interrupt on update
 	TIM_Cmd(TIM2, ENABLE);
@@ -313,12 +340,6 @@ void USART2_IRQHandler() {
 		int adcChar = (int) adcValue;
 		UARTPrint("ADC Value XV\r\n", 0x30|adcChar);
 			
-	} else if('l' == recvd) {
-		UARTPrint("Led data: X\r\n", recvd);
-		for(unsigned int i=0; i<6; i++) {
-			setLeds(0xFF, 0xFF, 0xFF, 0x10|i);
-		}
-		
 	} else if('6' <= recvd && recvd <= '9') {
 		UARTPrint("Engine Speed: X\r\n", recvd); // send serial response
 		setEngineSpeed((recvd-0x36)<<2); // Send SPI Command to set speed
@@ -332,32 +353,159 @@ void USART2_IRQHandler() {
 
 void TIM2_IRQHandler() {
 	GPIO_SetBits(GPIOB, GPIO_Pin_1);
-	step = step + 1;
+	step = (step+1) % 342; // step is reset every cycle
+
 	switch(step) {
-		case 180:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		//row 0:
+		case OFFSET+ROW0+RED_EVEN: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_EVEN);
 			break;
-		case 522:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		case OFFSET+ROW2+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
 			break;
-		case 864:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		
+		//row 1
+		case OFFSET+ROW1+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
 			break;
-		case 1206:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		case OFFSET+ROW3+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
 			break;
-		case 1548:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		
+		//row 2
+		case OFFSET+ROW2+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
 			break;
-		case 1890:
-			setLeds(0xFF, 0xFF, 0xFF, 0x10);
+		case OFFSET+ROW4+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
 			break;
-		case 342:
-			//step = 0;
+		
+		//row 3
+		case OFFSET+ROW3+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
 			break;
+		case OFFSET+ROW5+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		
+		//row 4 (white)
+		case OFFSET+ROW4+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW6+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		case OFFSET+ROW8+GREEN_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+			break;
+		case OFFSET+ROW10+GREEN_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+			break;
+		case OFFSET+ROW12+BLUE_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+			break;
+		case OFFSET+ROW14+BLUE_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+			break;
+
+		//row 5 (white)
+		case OFFSET+ROW5+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW7+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		case OFFSET+ROW9+GREEN_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+			break;
+		case OFFSET+ROW11+GREEN_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+			break;
+		case OFFSET+ROW13+BLUE_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+			break;
+		case OFFSET+ROW15+BLUE_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+			break;
+		
+		//row 6 (white)
+		case OFFSET+ROW6+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW8+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		case OFFSET+ROW10+GREEN_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+			break;
+		case OFFSET+ROW12+GREEN_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+			break;
+		case OFFSET+ROW14+BLUE_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+			break;
+		case OFFSET+ROW16+BLUE_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+			break;
+		
+		//row 7 (white)
+		case OFFSET+ROW7+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW9+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		case OFFSET+ROW11+GREEN_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|GREEN_EVEN);
+			break;
+		case OFFSET+ROW13+GREEN_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|GREEN_ODD);
+			break;
+		case OFFSET+ROW15+BLUE_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|BLUE_EVEN);
+			break;
+		case OFFSET+ROW17+BLUE_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|BLUE_ODD);
+			break;
+		
+		//row 8
+		case OFFSET+ROW8+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW10+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		
+		//row 9
+		case OFFSET+ROW9+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW11+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		
+		//row 10
+		case OFFSET+ROW10+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW12+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		
+		//row 11
+		case OFFSET+ROW11+RED_EVEN:
+			setLeds(0xFF, 0xFF, 0xFF, 0x10|RED_EVEN);
+			break;
+		case OFFSET+ROW13+RED_ODD: 
+			setLeds(0xFF,0xFF,0xFF,0x10|RED_ODD);
+			break;
+		
+		
+
 		default:
 			break;
 	}
+	
 	TIM_ClearITPendingBit(TIM2,TIM_IT_Update); // clear pending bit manually
 }
 
@@ -369,20 +517,12 @@ void SPI1_IRQHandler() {
 }
 
 void TIM3_IRQHandler() {
-	static unsigned char i = 0;
 	TIM_SetCounter(TIM3, 0);
 	TIM_SetCounter(TIM2, 0);
-	int cntPerRound = TIM_GetCapture3(TIM3);
-	int stepSize = (cntPerRound*(TIM_PRE_SCALER+1)) / TIME_SLOTS;
 	step = 0;
 	
-//	stepSizes[i] = stepSize;
-//	i = (i+1) % AVG_SAMPLE_SIZE;
-//	unsigned int sum = 0;
-//	for (unsigned char j=0; j<AVG_SAMPLE_SIZE; j++) {
-//		sum = sum + stepSizes[j];
-//	}
-//	avgStepSize = sum / AVG_SAMPLE_SIZE;
+	int cntPerRound = TIM_GetCapture3(TIM3);
+	int stepSize = (cntPerRound*(TIM_PRE_SCALER+1)) / TIME_SLOTS;
 	
 	TIM_SetAutoreload(TIM2, stepSize);
 	TIM_GenerateEvent(TIM2,TIM_EventSource_Update);
